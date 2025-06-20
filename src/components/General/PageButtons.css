@@ -5,7 +5,7 @@
 :root {
   --height: 1.5cm;
   --mobileHeight: 1cm;
-  --boxCol: rgb(27, 27, 27);
+  --boxCol: rgb(50, 50, 50);
   --font: "Vonique";
   --mobileWidth: 100%;
 }
@@ -58,6 +58,7 @@
   justify-content: center;
   padding: 0;
   background-color: var(--boxCol);
+  z-index: 1000;
 }
 
 .verticleLine {

@@ -10,13 +10,13 @@ import ThreeDModelPanel from "../components/ArtPage/3dModelPanel.jsx";
 import PropTypes from "prop-types";
 import { useEffect, useState } from 'react';
 import { createClient } from "@supabase/supabase-js";
+import Spinner from "../components/General/Spinner.jsx";
 const supabase = createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY);
 
 export default function ArtsPage() {
     const [sketches, setSketches] = useState([]);
     const [digitalData, setDigitalData] = useState([]);
-    const [text, setText] = useState("Loading...");
-
+    // use effect only runs this once when the component mounts
     useEffect(() => {
         getSketches();
         getDigitalData();
@@ -34,12 +34,6 @@ export default function ArtsPage() {
         console.log("data:", data)
     }
 
-    useEffect(() => {
-        // need if since initially sketches is an empty array
-        if (sketches.length === 0) return;
-        setText(sketches[0].title);
-    }, [sketches]);
-
     return (
         <div>
             <PageButtons/>
@@ -49,27 +43,40 @@ export default function ArtsPage() {
                     Explore my still sketches, digital paintings, and 3d models
                 </p>
             </div>
-            <Section title={"Traditional Sketches"}
-                     components={
-                         <>
-                             {sketches.map(({id, name, text, imageSrc}, index) => (
-                                 <ArtPanel key={id} leftSide={index % 2 === 0} description={text}
-                                           imageSrc={imageSrc} title={name}/>
-                             ))}
-                         </>
-                     }>
-            </Section>
-            <Section title={"Digital Paintings"}
-                     components={
-                         <>
-                             {digitalData.map(({id, name, text, imageSrc}, index) => (
-                                 <ArtPanel key={id} leftSide={index % 2 === 0} description={text}
-                                           imageSrc={imageSrc} title={name}/>
-                             ))}
-                         </>
-                     }>
-            </Section>
+            {sketches === null ? (
+                <Spinner text={"Connecting to data base..."}/>
+            ) : sketches.length === 0 ? (
+                <Spinner text={"Fetching Sketches"}/>
+            ) : (
+                <Section title={"Traditional Sketches"}
+                         components={
+                             <>
+                                 {sketches.map(({id, name, text, imageSrc}, index) => (
+                                     <ArtPanel key={id} leftSide={index % 2 === 0} description={text}
+                                               imageSrc={imageSrc} title={name}/>
+                                 ))}
+                             </>
+                         }>
+                </Section>
+                )
+            }
 
+            {digitalData === null ? (
+                <Spinner text={"Connecting to data base..."}/>
+            ) : digitalData.length === 0 ? (
+                <Spinner text={"Fetching digital paintings..."}/>
+                ) :
+                <Section title={"Digital Paintings"}
+                      components={
+                          <>
+                              {digitalData.map(({id, name, text, imageSrc}, index) => (
+                                  <ArtPanel key={id} leftSide={index % 2 === 0} description={text}
+                                            imageSrc={imageSrc} title={name}/>
+                              ))}
+                          </>
+                      }>
+            </Section>
+            }
             <Section title={"3d Models"}
                      components={
                          <>
